@@ -1,6 +1,9 @@
 import pandas as pd
 import requests
 import streamlit as st
+from st_aggrid import AgGrid, GridOptionsBuilder
+from st_aggrid.shared import GridUpdateMode
+
 
 st.set_page_config(
     page_title="Tankwars Statistic Tool",
@@ -26,8 +29,7 @@ st.markdown(
     """
             
             #### Instructions
-            Open the menu bar to input projected $ASTRO price, dual incentive staking rewards, user LP positions, and user lockup durations.
-
+           
 """
 )
 
@@ -35,14 +37,38 @@ st.info(
     "To support more community tools like this, consider delegating to the [Future FTM Delegator]()."
 )
 
-st.markdown(
-    """### Terraswap Liquidity
 
-Current pair liquidity on Terraswap, $ASTRO token to liquidity ratio, and current LP incentives.
+def aggrid_interactive_table(df: pd.DataFrame):
+    """Creates an st-aggrid interactive table based on a dataframe.
+    Args:
+        df (pd.DataFrame]): Source dataframe
+    Returns:
+        dict: The selected row
+    """
+    options = GridOptionsBuilder.from_dataframe(
+        df, enableRowGroup=True, enableValue=True, enablePivot=True
+    )
 
-"""
-)
+    options.configure_side_bar()
 
+    options.configure_selection("single")
+    selection = AgGrid(
+        df,
+        enable_enterprise_modules=True,
+        gridOptions=options.build(),
+        theme="light",
+        update_mode=GridUpdateMode.MODEL_CHANGED,
+        allow_unsafe_jscode=True,
+    )
+
+    return selection
+
+#load data
+for offset in range(0, total_record, 100):
+    url = "https://marketplace-api.tankwars.zone/api/v1/items?limit=50&offset=" + str(offset) + "&order_by=NEWEST&status=Selling"             
+    response = requests.get(url=url, headers=headers, params=querystring).json()        
+    all_items.append(response)       
+    print(offset)
 
 
 # disclaimer
