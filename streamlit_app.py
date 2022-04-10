@@ -66,19 +66,6 @@ headers = {
     "accept-language": "en-US,en;q=0.9",
 }
 
-# coinhall api
-response = requests.get(
-    "https://api.coinhall.org/api/v1/charts/terra/pairs", headers=headers
-).json()
-
-# convert to dataframe
-df = (
-    pd.DataFrame.from_dict(response, orient="index")
-    .reset_index(drop=False)
-    .rename(columns={"index": "address"})
-    .drop(labels=["timestamp", "unofficial", "startAt", "endAt"], axis=1)
-)
-
 
 # replit database
 #db = Database(
